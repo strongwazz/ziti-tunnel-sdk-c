@@ -123,6 +123,13 @@ done
 echo "==> tagging ${TAG} on fork release commit (was upstream ${UPSTREAM_COMMIT})"
 git tag -f -a "${TAG}" -m "EdgeConnect fork of ziti-edge-tunnel ${VERSION}"
 
+# Resolve the fork's GitHub repo (owner/name) from the origin remote so the
+# printed gh command targets the fork, not upstream. gh otherwise guesses the
+# upstream remote and fails with HTTP 404.
+ORIGIN_URL="$(git remote get-url origin)"
+FORK_REPO="$(printf '%s' "${ORIGIN_URL}" \
+  | sed -E 's#^git@[^:]+:##; s#^https?://[^/]+/##; s/\.git$//')"
+
 cat <<EOF
 
 Done. Branch ${BRANCH} now equals upstream ${TAG} + fork edits, tagged ${TAG}.
@@ -130,9 +137,11 @@ Done. Branch ${BRANCH} now equals upstream ${TAG} + fork edits, tagged ${TAG}.
 Review, then publish:
   git push origin ${BRANCH}
   git push --force origin ${TAG}    # --force: tag may already exist on origin
-  gh release create ${TAG} --title ${TAG} --generate-notes
+  gh release create ${TAG} --repo ${FORK_REPO} --target ${BRANCH} \\
+    --title ${TAG} --generate-notes
 
-(--force only affects YOUR origin's ${TAG}; upstream is never pushed to.)
+(--force only affects YOUR origin's ${TAG}; upstream is never pushed to.
+ --repo/--target keep gh on the fork instead of guessing upstream.)
 
 Publishing the GitHub Release triggers .github/workflows/fork-release.yml,
 which builds the Windows binaries and attaches the .zip artifacts.

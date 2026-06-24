@@ -80,7 +80,42 @@ if [ "${#COMMITS[@]}" -eq 0 ]; then
   echo "ERROR: no fork commits found in range ${FORK_PATCH_RANGE}" >&2
   exit 1
 fi
-git cherry-pick "${COMMITS[@]}"
+# Replay each commit. The fork removes upstream CI workflow files; when an
+# upstream release tag still modifies one of those files, the cherry-pick raises
+# a modify/delete conflict. We always want the fork's deletion to win, so
+# auto-resolve those and continue. Any OTHER conflict is a real content clash
+# (e.g. upstream rewrote tun.c) and aborts for manual handling.
+for c in "${COMMITS[@]}"; do
+  if git cherry-pick "${c}"; then
+    continue
+  fi
+  # Walk conflicts via porcelain status codes. During cherry-pick "ours" is the
+  # upstream base being built and "theirs" is the fork commit being applied, so a
+  # fork-deleted CI workflow shows as UD (modified by us / deleted by them). That
+  # is the only auto-resolvable case -- keep the deletion. Anything else (UU
+  # content clash, AA, DU, ...) is a real conflict we must not paper over.
+  unresolved=0
+  while IFS= read -r line; do
+    [ -n "${line}" ] || continue
+    xy="${line:0:2}"
+    f="${line:3}"
+    case "${xy}" in
+      "UD")
+        git rm -q -- "${f}"
+        echo "    auto-resolved (kept deleted): ${f}"
+        ;;
+      *)
+        echo "    UNRESOLVED conflict [${xy}]: ${f}" >&2
+        unresolved=1
+        ;;
+    esac
+  done < <(git status --porcelain | grep -E '^(DD|AU|UD|UA|DU|AA|UU) ')
+  if [ "${unresolved}" -ne 0 ]; then
+    echo "ERROR: non-trivial conflict replaying ${c}; resolve manually then run 'git cherry-pick --continue'." >&2
+    exit 1
+  fi
+  GIT_EDITOR=true git cherry-pick --continue
+done
 
 # Force-move ${TAG} from upstream's commit onto our release commit. Your repo's
 # origin/${TAG} (created on push) is what the build and consumers actually use;

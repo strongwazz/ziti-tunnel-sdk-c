@@ -40,7 +40,7 @@
 #include "tun.h"
 #include "tap.h"
 
-#define ZITI_TUN_NAME_BASE "ziti-tun"
+#define ZITI_TUN_NAME_BASE "edgeconnect-tun"
 
 #define ROUTE_LIFETIME (10 * 60) /* in seconds */
 #define ROUTE_REFRESH ((ROUTE_LIFETIME - (ROUTE_LIFETIME/10))*1000)
@@ -226,7 +226,7 @@ netif_driver tun_open(struct uv_loop_s *loop, uint32_t tun_ip, const char *cidr,
     }
     WintunSetLogger(WintunLogger); //set the logger here exclusively to avoid these errors from WinTun: Failed to find matching adapter name: Element not found. (Code 0x00000490)
 
-    tun->adapter = WintunCreateAdapter(w_adapter_name, L"OpenZiti", NULL); // Wintun adds "Tunnel" so this will be "OpenZiti Tunnel"
+    tun->adapter = WintunCreateAdapter(w_adapter_name, L"EdgeConnect", NULL); // Wintun adds "Tunnel" so this will be "EdgeConnect Tunnel"
     if (!tun->adapter) {
         DWORD err = GetLastError();
         snprintf(error, error_len, "Failed to create adapter: %ld", err);

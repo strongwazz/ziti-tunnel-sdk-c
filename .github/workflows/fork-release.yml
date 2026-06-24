@@ -1,0 +1,91 @@
+# Fork-owned release workflow. This file does not exist upstream, so it never
+# conflicts when fork edits are replayed onto an upstream release tag.
+#
+# It builds the Windows binaries only and attaches them to the GitHub Release
+# for the pushed tag. It deliberately does not reuse upstream's cmake.yml /
+# main.yml / release.yml (which build all platforms and which upstream rewrites
+# frequently) -- it only depends on the ./.github/actions/build composite action.
+name: Fork Windows Release
+
+on:
+  # publishing a GitHub Release on a vX.Y.Z tag cuts the release
+  release:
+    types:
+      - published
+  # manual rebuild without (re)publishing a release
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    name: build ${{ matrix.preset }}
+    env:
+      VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/vcpkg_cache,readwrite"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            name: Windows x86_64
+            preset: windows-x64-mingw
+
+          - os: windows-2022
+            name: Windows x86_64(win32crypto)
+            preset: windows-x64-win32crypto
+
+          - os: windows-2022
+            name: Windows arm64
+            preset: windows-arm64-vs2022
+
+    steps:
+      - name: checkout workspace
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run CMake Composite Action
+        uses: ./.github/actions/build
+        with:
+          preset: ${{ matrix.preset }}
+          target: bundle
+
+      - name: upload bundle artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.preset }}
+          path: ./build/bundle/ziti-edge-tunnel-*.zip
+          if-no-files-found: error
+
+  release:
+    name: Attach Windows Artifacts to Release
+    needs: [ build ]
+    # only attach to a release when one was actually published (not on dispatch)
+    if: ${{ github.event_name == 'release' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate the Version String from Git Tag
+        run: |
+          ZITI_VERSION="${GITHUB_REF_NAME#v}"
+          if [[ ! "${ZITI_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-.+)?$ ]]; then
+            echo "ERROR: ZITI_VERSION=${ZITI_VERSION} is not a release semver"
+            exit 1
+          fi
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.workspace }}/downloads
+
+      - name: List Release Artifacts
+        run: ls -horRAS ${{ runner.workspace }}/downloads/
+
+      - name: Attach to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          fail_on_unmatched_files: true
+          files: |
+            ${{ runner.workspace }}/downloads/**/*.zip

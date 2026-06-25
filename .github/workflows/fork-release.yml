@@ -19,6 +19,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
+# Least privilege by default; the release job opts into contents: write so it can
+# attach the built zips to the GitHub Release. Without this the repo's default
+# read-only GITHUB_TOKEN makes action-gh-release fail with
+# "Resource not accessible by integration".
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -66,6 +73,8 @@ jobs:
     # only attach to a release when one was actually published (not on dispatch)
     if: ${{ github.event_name == 'release' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # required to upload assets to the GitHub Release
     steps:
       - name: Validate the Version String from Git Tag
         run: |

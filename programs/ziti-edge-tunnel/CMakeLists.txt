@@ -19,6 +19,18 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+    if(DEFINED ENV{ZITI_TUN_NAME_BASE} AND NOT "$ENV{ZITI_TUN_NAME_BASE}" STREQUAL "")
+        set(ZITI_TUN_NAME_BASE "$ENV{ZITI_TUN_NAME_BASE}" CACHE STRING "Windows Wintun adapter alias prefix" FORCE)
+    else()
+        set(ZITI_TUN_NAME_BASE "edgeconnect-tun" CACHE STRING "Windows Wintun adapter alias prefix")
+    endif()
+
+    if(DEFINED ENV{ZITI_WINTUN_TUNNEL_TYPE} AND NOT "$ENV{ZITI_WINTUN_TUNNEL_TYPE}" STREQUAL "")
+        set(ZITI_WINTUN_TUNNEL_TYPE "$ENV{ZITI_WINTUN_TUNNEL_TYPE}" CACHE STRING "Windows Wintun tunnel type" FORCE)
+    else()
+        set(ZITI_WINTUN_TUNNEL_TYPE "EdgeConnect" CACHE STRING "Windows Wintun tunnel type")
+    endif()
+
     include(wintun.cmake)
     set(tun_lib wintun)
     set(wintun_dll "${wintun_SOURCE_DIR}/bin/${CMAKE_SYSTEM_PROCESSOR}/wintun.dll")
@@ -118,6 +130,13 @@ target_compile_definitions(ziti-edge-tunnel
         PRIVATE ZITI_LOG_PREFIX=${PROJECT_NAME}
         PRIVATE ZITI_LOG_MODULE="ziti-edge-tunnel"
         )
+
+if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+    target_compile_definitions(ziti-edge-tunnel
+            PRIVATE ZITI_TUN_NAME_BASE="${ZITI_TUN_NAME_BASE}"
+            PRIVATE ZITI_WINTUN_TUNNEL_TYPE="${ZITI_WINTUN_TUNNEL_TYPE}"
+            )
+endif()
 
 # if EXECINFO is present set a flag for later inclusion
 include(CheckIncludeFile)

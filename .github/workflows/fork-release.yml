@@ -29,7 +29,7 @@ permissions:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    name: build ${{ matrix.preset }}
+    name: build ${{ matrix.preset }} ${{ matrix.variant }}
     env:
       VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/vcpkg_cache,readwrite"
     strategy:
@@ -39,14 +39,50 @@ jobs:
           - os: windows-2022
             name: Windows x86_64
             preset: windows-x64-mingw
+            variant: edgeconnect
+            tun_name_base: edgeconnect-tun
+            wintun_tunnel_type: EdgeConnect
+            bundle_suffix: -edgeconnect
+
+          - os: windows-2022
+            name: Windows x86_64
+            preset: windows-x64-mingw
+            variant: zeroconnect
+            tun_name_base: zeroconnect-tun
+            wintun_tunnel_type: ZeroConnect
+            bundle_suffix: -zeroconnect
 
           - os: windows-2022
             name: Windows x86_64(win32crypto)
             preset: windows-x64-win32crypto
+            variant: edgeconnect
+            tun_name_base: edgeconnect-tun
+            wintun_tunnel_type: EdgeConnect
+            bundle_suffix: -edgeconnect
+
+          - os: windows-2022
+            name: Windows x86_64(win32crypto)
+            preset: windows-x64-win32crypto
+            variant: zeroconnect
+            tun_name_base: zeroconnect-tun
+            wintun_tunnel_type: ZeroConnect
+            bundle_suffix: -zeroconnect
 
           - os: windows-2022
             name: Windows arm64
             preset: windows-arm64-vs2022
+            variant: edgeconnect
+            tun_name_base: edgeconnect-tun
+            wintun_tunnel_type: EdgeConnect
+            bundle_suffix: -edgeconnect
+
+          - os: windows-2022
+            name: Windows arm64
+            preset: windows-arm64-vs2022
+            variant: zeroconnect
+            tun_name_base: zeroconnect-tun
+            wintun_tunnel_type: ZeroConnect
+            bundle_suffix: -zeroconnect
 
     steps:
       - name: checkout workspace
@@ -56,6 +92,10 @@ jobs:
 
       - name: Run CMake Composite Action
         uses: ./.github/actions/build
+        env:
+          ZITI_TUN_NAME_BASE: ${{ matrix.tun_name_base }}
+          ZITI_WINTUN_TUNNEL_TYPE: ${{ matrix.wintun_tunnel_type }}
+          ZITI_BUNDLE_VARIANT_SUFFIX: ${{ matrix.bundle_suffix }}
         with:
           preset: ${{ matrix.preset }}
           target: bundle
@@ -63,7 +103,7 @@ jobs:
       - name: upload bundle artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.preset }}
+          name: ${{ matrix.preset }}-${{ matrix.variant }}
           path: ./build/bundle/ziti-edge-tunnel-*.zip
           if-no-files-found: error
 

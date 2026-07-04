@@ -142,6 +142,14 @@ if (TLSUV_TLSLIB AND NOT TLSUV_TLSLIB STREQUAL "openssl")
     message(NOTICE "binary marker: ${comp-flavor}")
 endif ()
 
+if(DEFINED ENV{ZITI_BUNDLE_VARIANT_SUFFIX} AND NOT "$ENV{ZITI_BUNDLE_VARIANT_SUFFIX}" STREQUAL "")
+    set(ZITI_BUNDLE_VARIANT_SUFFIX "$ENV{ZITI_BUNDLE_VARIANT_SUFFIX}" CACHE STRING "suffix added to bundle artifact filenames" FORCE)
+else()
+    set(ZITI_BUNDLE_VARIANT_SUFFIX "" CACHE STRING "suffix added to bundle artifact filenames")
+endif()
+
+set(comp-flavor "${comp-flavor}${ZITI_BUNDLE_VARIANT_SUFFIX}")
+
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL AMD64)
     set(bundle_processor "x86_64")
 elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64)

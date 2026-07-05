@@ -14,16 +14,16 @@
 #endif
 #endif
 
-#ifndef ZITI_PRODUCT_NAME_TEXT
-#define ZITI_PRODUCT_NAME_TEXT TEXT("EdgeConnect")
+#ifndef ZITI_PRODUCT_NAME
+#define ZITI_PRODUCT_NAME "EdgeConnect"
 #endif
 
 #define SVCNAME TEXT("ziti")
-#define DISPLAYSVCNAME ZITI_PRODUCT_NAME_TEXT TEXT(" Service")
-#define SVCDESCRIPTION TEXT("Access your networks secured by ") ZITI_PRODUCT_NAME_TEXT
-#define APPNAME ZITI_PRODUCT_NAME_TEXT TEXT(" for Windows")
-#define APPSTARTED ZITI_PRODUCT_NAME_TEXT TEXT(" Started")
-#define APPSTOPPED ZITI_PRODUCT_NAME_TEXT TEXT(" Stopped")
+#define DISPLAYSVCNAME ZITI_PRODUCT_NAME " Service"
+#define SVCDESCRIPTION "Access your networks secured by " ZITI_PRODUCT_NAME
+#define APPNAME ZITI_PRODUCT_NAME " for Windows"
+#define APPSTARTED ZITI_PRODUCT_NAME " Started"
+#define APPSTOPPED ZITI_PRODUCT_NAME " Stopped"
 
 #define APP_VERSION_UNKNOWN "unknown"
 

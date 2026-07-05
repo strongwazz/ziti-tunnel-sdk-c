@@ -85,6 +85,10 @@ char* get_log_file_name();
 
 static int dns_miss_status = DNS_REFUSE;
 
+#ifndef ZITI_PRODUCT_NAME
+#define ZITI_PRODUCT_NAME "EdgeConnect"
+#endif
+
 typedef char * (*to_json_fn)(const void * msg, int flags, size_t *len);
 static void scm_service_stop_event(uv_loop_t *loop, void *arg);
 static bool is_host_only();
@@ -1042,7 +1046,7 @@ static int run_tunnel(uv_loop_t *ziti_loop, uint32_t tun_ip, uint32_t dns_ip, co
             ZITI_LOG(INFO, "DNS is enabled for the TUN interface, because apply Dns flag in the config file is true");
         }
         if (!nrpt_effective && !get_add_dns_flag()) {
-            ZITI_LOG(INFO, "DNS is enabled for the TUN interface, because Ziti policies test result in this client is false");
+            ZITI_LOG(INFO, "DNS is enabled for the TUN interface, because policy test result in this client is false");
         }
         set_dns(tun, dns_ip);
         ZITI_LOG(INFO, "Setting interface metric to 5");
@@ -1403,7 +1407,7 @@ static int init_proxy_connector(const char *url) {
         snprintf(passwd, sizeof(passwd), "%.*s", (int)proxy_url.password_len, proxy_url.password);
         proxy->set_auth(proxy, tlsuv_PROXY_BASIC, user, passwd);
     }
-    ZITI_LOG(INFO, "connecting to OpenZiti controller and edge routers through proxy '%s:%s'", host, port);
+    ZITI_LOG(INFO, "connecting to controller and edge routers through proxy '%s:%s'", host, port);
     tlsuv_set_global_connector(proxy);
 
     return 0;
@@ -3302,13 +3306,13 @@ static int add_identity_opts(int argc, char *argv[]) {
 }
 
 static CommandLine enroll_cmd = make_command(
-    "enroll", "enroll Ziti identity",
+    "enroll", "enroll identity",
     "( -u|--url <controller URL> | -j|--jwt <enrollment token> ) -i|--identity <identity> [-E|--enroll-to none|cert|token] [-p|--provider <name>] [-k|--key <private_key> [-c|--cert <certificate>]] [-n|--name <name>]",
     "\t-u|--url\tcontroller URL for enrollment (requires 3rd party IDP for auth)\n"
     "\t-j|--jwt\tenrollment token file, or network JWT when used with -u\n"
     "\t-E|--enroll-to\tenrollment mode for -u: none (bootstrap only), cert (OIDC + certificate), token (OIDC + token)\n"
     "\t-p|--provider\text JWT signer name (auto-selected if only one is configured)\n"
-    "\t-x|--proxy type://[username[:password]@]hostname_or_ip:port\tproxy to use when connecting to OpenZiti controller. 'http' is currently the only supported type.\n"
+    "\t-x|--proxy type://[username[:password]@]hostname_or_ip:port\tproxy to use when connecting to the controller. 'http' is currently the only supported type.\n"
     "\t-i|--identity\toutput identity file\n"
     "\t-K|--use-keychain\tuse keychain to generate/store private key\n"
     "\t-k|--key\tprivate key for enrollment\n"
@@ -3331,12 +3335,12 @@ static CommandLine enroll_cmd = make_command(
 #define PCAP_OPTS_DETAIL ""
 #endif
 
-static CommandLine run_cmd = make_command("run", "run Ziti tunnel (required superuser access)",
+static CommandLine run_cmd = make_command("run", "run " ZITI_PRODUCT_NAME " tunnel (required superuser access)",
                                           "-i <id.file> [-r N] [-v N] [-d|--dns-ip-range N.N.N.N/N] " DIVERTER_OPTS_SUMMARY "[-u|--dns-upstream N.N.N.N] [-P|--pipe <name>]\n",
                                           "\t-i|--identity <identity>\trun with provided identity file (required)\n"
                                           "\t-I|--identity-dir <dir>\tload identities from provided directory\n"
                                           "\t-x|--proxy type://[username[:password]@]hostname_or_ip:port\tproxy to use when"
-                                          " connecting to OpenZiti controller and edge routers. 'http' is currently the only supported type.\n"
+                                          " connecting to the controller and edge routers. 'http' is currently the only supported type.\n"
                                           "\t-2|--l2\tenable layer 2 services\n"
                                           PCAP_OPTS_DETAIL
                                           "\t-v|--verbose N\tset log level, higher level -- more verbose (default 3)\n"
@@ -3344,16 +3348,16 @@ static CommandLine run_cmd = make_command("run", "run Ziti tunnel (required supe
                                           "\t-d|--dns-ip-range <ip range>\tspecify CIDR block in which service DNS names"
                                           " are assigned in N.N.N.N/n format (default " DEFAULT_DNS_CIDR ")\n"
                                           DIVERTER_OPTS_DETAIL
-                                          "\t-u|--dns-upstream <ip addr>\tresolver listening on 53/udp for DNS queries that do not match a Ziti service\n"
+                                          "\t-u|--dns-upstream <ip addr>\tresolver listening on 53/udp for DNS queries that do not match a " ZITI_PRODUCT_NAME " service\n"
                                           "\t-P|--pipe <name>\tIPC socket discriminator suffix for running multiple ziti-edge-tunnel instances side-by-side. "
                                           "When omitted, the PID is used automatically if other instances are detected; otherwise the default socket path is used.\n",
                                           run_opts, run);
-static CommandLine run_host_cmd = make_command("run-host", "run Ziti tunnel to host services",
+static CommandLine run_host_cmd = make_command("run-host", "run " ZITI_PRODUCT_NAME " tunnel to host services",
                                           "-i <id.file> [-r N] [-v N] [-P|--pipe <name>]",
                                           "\t-i|--identity <identity>\trun with provided identity file (required)\n"
                                           "\t-I|--identity-dir <dir>\tload identities from provided directory\n"
                                           "\t-x|--proxy type://[username[:password]@]hostname_or_ip:port\tproxy to use when"
-                                          " connecting to OpenZiti controller and edge routers"
+                                          " connecting to the controller and edge routers"
                                           "\t-v|--verbose N\tset log level, higher level -- more verbose (default 3)\n"
                                           "\t-r|--refresh N\tset service polling interval in seconds (default 10)\n"
                                           "\t-P|--pipe <name>\tIPC socket discriminator suffix for running multiple ziti-edge-tunnel instances side-by-side. "
@@ -3423,7 +3427,7 @@ static CommandLine refresh_cmd = make_command(
         refresh_identity_opts, send_message_to_tunnel_fn);
 
 #if _WIN32
-static CommandLine service_control_cmd = make_command("service_control", "execute service control functions for Ziti tunnel (required superuser access)",
+static CommandLine service_control_cmd = make_command("service_control", "execute service control functions for " ZITI_PRODUCT_NAME " tunnel (required superuser access)",
                                           "-o|--operation <option>",
                                           "\t-o|--operation <option>\texecute the service control functions eg: install, uninstall and stop (required)\n",
                                           svc_opts, service_control);
@@ -3463,7 +3467,7 @@ static CommandLine *main_cmds[] = {
 
 static CommandLine main_cmd = make_command_set(
         NULL,
-        "Ziti Tunnel App",
+        ZITI_PRODUCT_NAME " Tunnel App",
         "<command> [<args>]", "to get help for specific command run 'ziti-edge-tunnel help <command>' "
                               "or 'ziti-edge-tunnel <command> -h'.\n"
                               "\n"
@@ -3669,7 +3673,7 @@ int main(int argc, char *argv[]) {
     // started_by_scm will be set to true only if scm initializes the config value
     // if the service is started from cmd line, SvcStart will return immediately and started_by_scm will be set to false. In this case tunnel can be run normally
     if (started_by_scm) {
-        main_cmd.name = "Ziti Desktop Edge for Windows"; // when running as a service - it must have been installed by
+        main_cmd.name = ZITI_PRODUCT_NAME " for Windows"; // when running as a service - it must have been installed by
                                                          // the ZDEW installer so let's use that name here
         printf("The service is stopped by SCM");
         return 0;

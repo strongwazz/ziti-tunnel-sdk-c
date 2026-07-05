@@ -1,5 +1,5 @@
 [Unit]
-Description=Ziti Edge Tunnel
+Description=Tunnel Service
 After=network-online.target
 
 [Service]

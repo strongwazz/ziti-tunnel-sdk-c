@@ -245,7 +245,7 @@ static void ip_dump(const tunnel_ip_stats *stats, dump_writer writer, void *writ
 
     writer(writer_ctx, "\n=================\nIP Connections:\n");
     writer(writer_ctx, "%-12s%-40s%-40s%-16s%-24s\n",
-           "Protocol", "Local Address", "Remote Address", "State", "Ziti Service");
+           "Protocol", "Local Address", "Remote Address", "State", "Service");
     tunnel_ip_conn_array conns = stats->connections;
     char local_addr[64];
     char remote_addr[64];
@@ -1609,7 +1609,7 @@ static void on_sigdump(uv_signal_t *sig, int signum) {
 #endif
     char fname[MAXPATHLEN];
     snprintf(fname, sizeof(fname), "/tmp/ziti-dump.%lu.dump", (unsigned long)uv_os_getpid());
-    ZITI_LOG(INFO, "saving Ziti dump to %s", fname);
+    ZITI_LOG(INFO, "saving tunnel dump to %s", fname);
     FILE *dumpfile = fopen(fname, "a+");
     if (dumpfile == NULL) {
         ZITI_LOG(ERROR, "failed to open dump output file(%s): %d(%s)", fname, errno, strerror(errno));
@@ -1624,7 +1624,7 @@ static void on_sigdump(uv_signal_t *sig, int signum) {
     struct tm* start_tm = gmtime(&sec);
     strftime(time_str, sizeof(time_str), "%Y-%m-%dT%H:%M:%S", start_tm);
 
-    CHECK(cleanup, fprintf(dumpfile, "Ziti Dump starting: %s\n", time_str));
+    CHECK(cleanup, fprintf(dumpfile, "Tunnel dump starting: %s\n", time_str));
     const char *k;
     struct ziti_instance_s *inst;
     MODEL_MAP_FOREACH(k, inst, &instances) {
@@ -1690,4 +1690,3 @@ IMPL_MODEL(tunnel_command_inline, TUNNEL_CMD_INLINE)
 
 IMPL_MODEL(jwt_provider, EXT_JWT_PROVIDER)
 IMPL_MODEL(ext_signer_event, EXT_SIGNER_EVENT_MODEL)
-

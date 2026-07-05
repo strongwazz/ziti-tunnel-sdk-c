@@ -521,7 +521,7 @@ void dns_update_etc_resolv(const char *tun, unsigned int ifindex, const char *ad
       _cleanup_(cleanup_filep) FILE *file = fopen(RESOLV_CONF_FILE, "r+");
       if (file == NULL) {
           ZITI_LOG(ERROR, "cannot open %s: %s", RESOLV_CONF_FILE, strerror(errno));
-          ZITI_LOG(WARN, "run as 'root' or manually update your resolver configuration. Ziti DNS must be the first resolver: %s", addr);
+          ZITI_LOG(WARN, "run as 'root' or manually update your resolver configuration. Tunnel DNS must be the first resolver: %s", addr);
           return;
       }
 

@@ -121,7 +121,7 @@ done
 # origin/${TAG} (created on push) is what the build and consumers actually use;
 # the local upstream tag is overwritten here but is re-fetchable anytime.
 echo "==> tagging ${TAG} on fork release commit (was upstream ${UPSTREAM_COMMIT})"
-git tag -f -a "${TAG}" -m "EdgeConnect fork of ziti-edge-tunnel ${VERSION}"
+git tag -f -a "${TAG}" -m "Fork release of ziti-edge-tunnel ${VERSION}"
 
 # Resolve the fork's GitHub repo (owner/name) from the origin remote so the
 # printed gh command targets the fork, not upstream. gh otherwise guesses the

@@ -274,7 +274,7 @@ static void find_dns_updater() {
             return;
         }
 
-        ZITI_LOG(WARN, "Adding ziti resolver to /etc/resolv.conf. Ziti DNS functionality may be impaired");
+        ZITI_LOG(WARN, "Adding tunnel resolver to /etc/resolv.conf. Tunnel DNS functionality may be impaired");
         dns_updater = dns_update_etc_resolv;
         dns_set_miss_status(DNS_REFUSE);
     } else {

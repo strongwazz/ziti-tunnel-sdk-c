@@ -60,7 +60,7 @@ static void default_loop_sem_init(void) {
 }
 
 static tunneler_context create_tunneler_ctx(tunneler_sdk_options *opts, uv_loop_t *loop) {
-    TNL_LOG(INFO, "Ziti Tunneler SDK (%s)", ziti_tunneler_version());
+    TNL_LOG(INFO, "Tunneler (%s)", ziti_tunneler_version());
 
     if (opts == NULL) {
         TNL_LOG(ERR, "invalid tunneler options");

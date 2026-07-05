@@ -28,14 +28,14 @@ if [ "$1" = "configure" ]; then
   # systemd-sysusers on ubuntu 18 (systemd v237) doesn't recognize `--replace`
   if command -v systemd-sysusers > /dev/null 2>&1 &&
      test $(systemd-sysusers --version | awk '/^systemd / { print $2}') -gt 237; then
-    echo 'u ziti - "openziti user" "/var/lib/ziti"' | \
+    echo 'u ziti - "tunneler user" "/var/lib/ziti"' | \
       systemd-sysusers --replace=/usr/lib/sysusers.d/ziti-edge-tunnel.conf -
   else
     if ! getent group ziti > /dev/null 2>&1; then
       groupadd --system ziti
     fi
     if ! getent passwd ziti > /dev/null 2>&1; then
-      useradd --system --home-dir=/var/lib/ziti --shell /usr/sbin/nologin --comment "openziti user" -g ziti --no-user-group ziti
+      useradd --system --home-dir=/var/lib/ziti --shell /usr/sbin/nologin --comment "tunneler user" -g ziti --no-user-group ziti
     fi
   fi
 

@@ -240,9 +240,9 @@ VOID SvcInit( DWORD dwArgc, LPTSTR *lpszArgv)
 
     if (WaitForSingleObject(ghSvcRunningEvent, 150000) == WAIT_OBJECT_0) {
         ReportSvcStatus( SERVICE_RUNNING, NO_ERROR, 0 );
-        SvcReportEvent(TEXT("Ziti Edge Tunnel Started"), EVENTLOG_INFORMATION_TYPE);
+        SvcReportEvent(APPSTARTED, EVENTLOG_INFORMATION_TYPE);
     } else {
-        SvcReportEvent(TEXT("Ziti Edge Tunnel Stopped"), EVENTLOG_INFORMATION_TYPE);
+        SvcReportEvent(APPSTOPPED, EVENTLOG_INFORMATION_TYPE);
         ReportSvcStatus( SERVICE_STOPPED, NO_ERROR, 0 );
         return;
     }
@@ -255,7 +255,7 @@ VOID SvcInit( DWORD dwArgc, LPTSTR *lpszArgv)
 
     scm_service_stop();
 
-    SvcReportEvent(TEXT("Ziti Edge Tunnel Stopped"), EVENTLOG_INFORMATION_TYPE);
+    SvcReportEvent(APPSTOPPED, EVENTLOG_INFORMATION_TYPE);
     ReportSvcStatus( SERVICE_STOPPED, NO_ERROR, 0 );
 }
 

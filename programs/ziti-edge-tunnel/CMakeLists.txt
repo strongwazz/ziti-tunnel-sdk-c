@@ -31,6 +31,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
         set(ZITI_WINTUN_TUNNEL_TYPE "EdgeConnect" CACHE STRING "Windows Wintun tunnel type")
     endif()
 
+    set(ZITI_PRODUCT_NAME "${ZITI_WINTUN_TUNNEL_TYPE}" CACHE STRING "product name used in Windows user-facing text")
+
     include(wintun.cmake)
     set(tun_lib wintun)
     set(wintun_dll "${wintun_SOURCE_DIR}/bin/${CMAKE_SYSTEM_PROCESSOR}/wintun.dll")
@@ -135,6 +137,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
     target_compile_definitions(ziti-edge-tunnel
             PRIVATE ZITI_TUN_NAME_BASE="${ZITI_TUN_NAME_BASE}"
             PRIVATE ZITI_WINTUN_TUNNEL_TYPE="${ZITI_WINTUN_TUNNEL_TYPE}"
+            PRIVATE ZITI_PRODUCT_NAME="${ZITI_PRODUCT_NAME}"
+            PRIVATE ZITI_PRODUCT_NAME_TEXT=TEXT("${ZITI_PRODUCT_NAME}")
             )
 endif()
 

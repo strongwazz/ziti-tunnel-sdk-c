@@ -55,7 +55,7 @@ static FILE *ziti_tunneler_log = NULL;
 static uv_check_t *log_flusher;
 static struct tm *start_time;
 static char* log_filename_base = NULL;
-static const char* default_log_filename_base = "ziti-tunneler.log";
+static const char* default_log_filename_base = "tunneler.log";
 static int rotation_count = 7;
 
 static const char* get_log_filename_base() {

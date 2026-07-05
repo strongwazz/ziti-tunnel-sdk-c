@@ -38,3 +38,6 @@ tests/integration/config*.json
 !tests/integration/config.example.json
 
 github_deploy_key
+
+# Local release helper transcripts
+/.release-push/

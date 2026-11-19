@@ -63,9 +63,9 @@ static const char* get_log_filename_base() {
         return log_filename_base;
     }
     if (log_discriminator != NULL) {
-        size_t n = strlen("ziti-tunneler.") + strlen(log_discriminator) + strlen(".log") + 1;
+        size_t n = strlen("tunneler.") + strlen(log_discriminator) + strlen(".log") + 1;
         log_filename_base = calloc(n, sizeof(char));
-        snprintf(log_filename_base, n, "ziti-tunneler.%s.log", log_discriminator);
+        snprintf(log_filename_base, n, "tunneler.%s.log", log_discriminator);
     } else {
         log_filename_base = strdup(default_log_filename_base);
     }

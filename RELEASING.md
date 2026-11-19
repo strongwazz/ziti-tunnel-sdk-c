@@ -12,10 +12,12 @@ and ships **Windows-only** binaries whose version matches the upstream release
 The entire fork patch is small and lives on `main`:
 
 - `programs/ziti-edge-tunnel/netif_driver/windows/tun.c` — Windows adapter
-  branding is build-variant aware. The release workflow builds **EdgeConnect**
-  (alias `edgeconnect-tun*`, type "EdgeConnect Tunnel") and **ZeroConnect**
-  (alias `zeroconnect-tun*`, type "ZeroConnect Tunnel").
-- `.github/workflows/fork-release.yml` — builds both variants for the 3 Windows
+  branding is **ZeroConnect** (alias `zeroconnect-tun*`, type "ZeroConnect Tunnel").
+  User-facing Windows text (service display name/description, event log, CLI
+  help, log filename `tunneler.log`) uses `ZITI_PRODUCT_NAME` (default
+  `ZeroConnect`). Binary, IPC pipe/socket names and the `ziti` service name are
+  intentionally unchanged so existing clients keep working.
+- `.github/workflows/fork-release.yml` — builds ZeroConnect for the 3 Windows
   presets and attaches the zips to the GitHub Release. This file does not exist upstream.
 - Upstream CI workflows are **deleted** (all-platform builds, Linux packaging,
   container images, OpenZiti Mattermost/CLA/nix, Release Drafter). Only

@@ -15,7 +15,7 @@
 #endif
 
 #ifndef ZITI_PRODUCT_NAME
-#define ZITI_PRODUCT_NAME "EdgeConnect"
+#define ZITI_PRODUCT_NAME "ZeroConnect"
 #endif
 
 #define SVCNAME TEXT("ziti")

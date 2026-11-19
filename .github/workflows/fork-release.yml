@@ -39,14 +39,6 @@ jobs:
           - os: windows-2022
             name: Windows x86_64
             preset: windows-x64-mingw
-            variant: edgeconnect
-            tun_name_base: edgeconnect-tun
-            wintun_tunnel_type: EdgeConnect
-            bundle_suffix: -edgeconnect
-
-          - os: windows-2022
-            name: Windows x86_64
-            preset: windows-x64-mingw
             variant: zeroconnect
             tun_name_base: zeroconnect-tun
             wintun_tunnel_type: ZeroConnect
@@ -55,26 +47,10 @@ jobs:
           - os: windows-2022
             name: Windows x86_64(win32crypto)
             preset: windows-x64-win32crypto
-            variant: edgeconnect
-            tun_name_base: edgeconnect-tun
-            wintun_tunnel_type: EdgeConnect
-            bundle_suffix: -edgeconnect
-
-          - os: windows-2022
-            name: Windows x86_64(win32crypto)
-            preset: windows-x64-win32crypto
             variant: zeroconnect
             tun_name_base: zeroconnect-tun
             wintun_tunnel_type: ZeroConnect
             bundle_suffix: -zeroconnect
-
-          - os: windows-2022
-            name: Windows arm64
-            preset: windows-arm64-vs2022
-            variant: edgeconnect
-            tun_name_base: edgeconnect-tun
-            wintun_tunnel_type: EdgeConnect
-            bundle_suffix: -edgeconnect
 
           - os: windows-2022
             name: Windows arm64

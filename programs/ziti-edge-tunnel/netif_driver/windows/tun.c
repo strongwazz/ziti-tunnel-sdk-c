@@ -41,11 +41,11 @@
 #include "tap.h"
 
 #ifndef ZITI_TUN_NAME_BASE
-#define ZITI_TUN_NAME_BASE "edgeconnect-tun"
+#define ZITI_TUN_NAME_BASE "zeroconnect-tun"
 #endif
 
 #ifndef ZITI_WINTUN_TUNNEL_TYPE
-#define ZITI_WINTUN_TUNNEL_TYPE "EdgeConnect"
+#define ZITI_WINTUN_TUNNEL_TYPE "ZeroConnect"
 #endif
 
 #define WIDE_LITERAL_(s) L ## s

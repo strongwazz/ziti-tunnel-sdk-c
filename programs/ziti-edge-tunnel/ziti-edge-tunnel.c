@@ -86,7 +86,7 @@ char* get_log_file_name();
 static int dns_miss_status = DNS_REFUSE;
 
 #ifndef ZITI_PRODUCT_NAME
-#define ZITI_PRODUCT_NAME "EdgeConnect"
+#define ZITI_PRODUCT_NAME "ZeroConnect"
 #endif
 
 typedef char * (*to_json_fn)(const void * msg, int flags, size_t *len);
@@ -1943,7 +1943,7 @@ static int version_opts(int argc, char *argv[]) {
 static void version() {
     if (verbose_version) {
         tls_context *tls = default_tls_context();
-        printf("ziti-tunneler: %s\n"
+        printf("tunneler:      %s\n"
                "ziti-sdk:      %s\n"
                "tlsuv:         %s[%s]\n",
                ziti_tunneler_version(), ziti_get_version()->version, tlsuv_version(), tls->version());
